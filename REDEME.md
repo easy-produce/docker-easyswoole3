@@ -8,11 +8,6 @@ docker-compose up -d --build
 docker-compose stop
 ```
 
-进入easyswoole2
-```
-docker exec -it  es2 bash
-```
-
 进入easyswoole3
 ```
 docker exec -it  es3 bash
