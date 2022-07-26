@@ -1,0 +1,4 @@
+FROM easyproduce/easyswoole3
+
+WORKDIR /mnt/server/php
+CMD ["tail", "-f", "/dev/null"]

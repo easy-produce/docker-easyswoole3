@@ -1,0 +1,138 @@
+version: '2'
+services:
+  mysql:
+    container_name: mysql-dev
+    privileged: true
+    image: 'mysql/mysql-server:5.6.38'
+    restart: unless-stopped
+    volumes:
+      - ~/develop/mysql/5.6.38/:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=asa
+    networks:
+      - backend
+    environment:
+      - TZ=Asia/Shanghai
+
+  redis:
+    container_name: redis-dev
+    privileged: true
+    image: 'redis:latest'
+    restart: unless-stopped
+    expose:
+      - "6379"
+    ports:
+      - "6379:6379"
+    networks:
+      - backend
+    environment:
+      - TZ=Asia/Shanghai
+
+  easyswoole3:
+    container_name: es3
+    build:
+      context: ""
+      dockerfile: easyswoole3
+    privileged: true
+    image: 'easyproduce/easyswoole3:latest'
+    restart: unless-stopped
+    volumes:
+      - ~/develop/php:/mnt/server/php # 项目目录
+      - ~/develop/logs/php:/mnt/logs/php # 日志目录
+      - ~/develop/temp/php:/mnt/temp/php # temp目录
+    ports:
+      - "5001:5001"
+      - "5002:5002"
+      - "5003:5003"
+      - "5004:5004"
+      - "5005:5005"
+      - "5006:5006"
+      - "5007:5007"
+      - "5008:5008"
+      - "5009:5009"
+      - "5010:5010"
+      - "5011:5011"
+      - "5012:5012"
+      - "5013:5013"
+      - "5014:5014"
+      - "5015:5015"
+      - "5016:5016"
+      - "5017:5017"
+      - "5018:5018"
+      - "5019:5019"
+      - "5020:5020"
+      - "5021:5021"
+      - "5022:5022"
+      - "5023:5023"
+      - "5024:5024"
+      - "5025:5025"
+      - "5026:5026"
+      - "5027:5027"
+      - "5028:5028"
+      - "5029:5029"
+      - "5030:5030"
+      - "5050:5050"
+      - "5051:5051"
+      - "5052:5052"
+      - "5053:5053"
+      - "5054:5054"
+      - "5055:5055"
+      - "5056:5056"
+      - "5057:5057"
+      - "5058:5058"
+      - "5059:5059"
+      - "5060:5060"
+      - "5061:5061"
+      - "5062:5062"
+      - "5063:5063"
+      - "5064:5064"
+      - "5065:5065"
+      - "5066:5066"
+      - "5067:5067"
+      - "5068:5068"
+      - "5069:5069"
+      - "5070:5070"
+      - "20000:20000"
+      - "20100:20100"
+      - "20200:20200"
+      - "20300:20300"
+      - "20400:20400"
+      - "20500:20500"
+      - "20101:20101"
+      - "20201:20201"
+      - "20301:20301"
+      - "20302:20302"
+      - "20303:20303"
+      - "20304:20304"
+      - "20305:20305"
+      - "20306:20306"
+      - "20401:20401"
+      - "20501:20501"
+    networks:
+      - backend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1g"
+    dns:
+      - 223.5.5.5
+    environment:
+      - TZ=Asia/Shanghai
+
+  mongo:
+    container_name: mongo-dev
+    privileged: true
+    image: 'mongo:4.4.6'
+    restart: unless-stopped
+    expose:
+      - "27017"
+    ports:
+      - "27017:27017"
+    networks:
+      - backend
+networks:
+  backend:
