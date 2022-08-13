@@ -38,7 +38,7 @@ services:
       context: ""
       dockerfile: easyswoole3
     privileged: true
-    image: 'easyproduce/easyswoole3:latest'
+    image: 'easyproduce/easyswoole3:ubuntu'
     restart: unless-stopped
     volumes:
       - ~/develop/php:/mnt/server/php # 项目目录
