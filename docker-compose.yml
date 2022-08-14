@@ -13,10 +13,9 @@ services:
       - "3306"
     environment:
       - MYSQL_ROOT_PASSWORD=asa
+      - Z=Asia/Shanghai
     networks:
       - backend
-    environment:
-      - TZ=Asia/Shanghai
 
   redis:
     container_name: redis-dev
