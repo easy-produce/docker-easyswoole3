@@ -1,7 +1,7 @@
 FROM ubuntu:20.04
 
 #version defined
-#ENV PHP_VERSION php7.3
+#ENV PHP_VERSION php7.4
 
 # 设置策略
 RUN touch /etc/apt/apt.conf.d/99verify-peer.conf \ && echo >>/etc/apt/apt.conf.d/99verify-peer.conf "Acquire { https::Verify-Peer false }"
@@ -65,28 +65,35 @@ RUN apt-get update
 
 ## 安装php
 RUN apt-get install -y    \
-   php7.3                \
-   php7.3-fpm            \
-   php7.3-gd             \
-   php7.3-mbstring       \
-   php7.3-json           \
-   php7.3-mysqlnd        \
-   php7.3-cli            \
-   php7.3-dev            \
-   php7.3-redis          \
-   php7.3-mysqli         \
-   #php7.3-swoole         \
-   php7.3-oauth          \
-   php7.3-memcache       \
-   php7.3-memcached      \
-   php7.3-mcrypt         \
-   php7.3-lua            \
-   php7.3-json           \
-   php7.3-grpc           \
-   php7.3-bcmath         \
-   php7.3-mongodb        \
-   php7.3-imagick        \
-   php7.3-common
+   php7.4                \
+   php7.4-curl           \
+   php7.4-fpm            \
+   php7.4-gd             \
+   php7.4-intl           \
+   php7.4-imap           \
+   php7.4-xml            \
+   php7.4-xmlrpc         \
+   php7.4-zip               \
+   php7.4-sqlite3        \
+   php7.4-mbstring       \
+   php7.4-json           \
+   php7.4-mysqlnd        \
+   php7.4-cli            \
+   php7.4-dev            \
+   php7.4-redis          \
+   php7.4-mysqli         \
+   #php7.4-swoole         \
+   php7.4-oauth          \
+   php7.4-memcache       \
+   php7.4-memcached      \
+   php7.4-mcrypt         \
+   php7.4-lua            \
+   php7.4-json           \
+   php7.4-grpc           \
+   php7.4-bcmath         \
+   php7.4-mongodb        \
+   php7.4-imagick        \
+   php7.4-common
 
 # composer
 RUN wget -c https://mirrors.aliyun.com/composer/composer.phar \
