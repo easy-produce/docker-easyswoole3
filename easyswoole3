@@ -17,6 +17,11 @@ RUN apt-get update
 RUN apt-get upgrade -y
 
 RUN apt-get install -y wget
+RUN apt-get install -y vim
+RUN apt-get install -y telnet
+RUN apt-get install -y ntpdate
+RUN apt-get install -y mysql-client
+RUN apt-get install -y mongodb
 
 ## 设置时区
 RUN export DEBIAN_FRONTEND=noninteractive \
