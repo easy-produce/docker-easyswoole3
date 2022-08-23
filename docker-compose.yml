@@ -33,9 +33,9 @@ services:
 
   easyswoole3:
     container_name: es3
-#    build:
-#      context: ""
-#      dockerfile: easyswoole3
+    build:
+      context: ""
+      dockerfile: easyswoole3
     privileged: true
     image: 'easyproduce/easyswoole3:7.3'
     restart: unless-stopped
