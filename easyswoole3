@@ -22,6 +22,7 @@ RUN apt-get install -y telnet
 RUN apt-get install -y ntpdate
 RUN apt-get install -y mysql-client
 RUN apt-get install -y mongodb
+RUN apt-get install -y redis
 
 ## 设置时区
 RUN export DEBIAN_FRONTEND=noninteractive \
