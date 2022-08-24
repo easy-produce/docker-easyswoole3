@@ -154,7 +154,7 @@ RUN wget http://pecl.php.net/get/inotify-2.0.0.tgz -O inotify.tar.gz \
     && ./configure  \
     && make \
     && make install \
-    ) \imagick
+    ) \
     && echo 'extension=inotify.so' > /etc/php/7.3/cli/conf.d/20-inotify.ini \
     && echo 'extension=inotify.so' > /etc/php/7.3/mods-available/20-inotify.ini \
     && echo 'extension=inotify.so' > /etc/php/7.3/fpm/conf.d/20-inotify.ini \
@@ -244,10 +244,10 @@ RUN wget http://pecl.php.net/get/zip-1.19.2.tgz -O zip.tar.gz \
     && rm -rf zip;
 
 # 安装imagick
-RUN apt-get install libmagickwand-dev libmagickcore-dev
+RUN apt-get -y install libmagickwand-dev libmagickcore-dev
 
 # 复制配置文件到容器
-COPY ./extend/php/imagick/policy.xml /etc/ImageMagick-6/
+COPY ./extend/php/imagick/policy.xml /etc/ImageMagick-6/policy.xml
 
 #指定容器里面的路径
 WORKDIR /mnt/server/php
