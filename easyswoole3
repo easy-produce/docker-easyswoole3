@@ -82,7 +82,6 @@ RUN apt-get install -y    \
    php7.4-dev            \
    php7.4-redis          \
    php7.4-mysqli         \
-   #php7.4-swoole         \
    php7.4-oauth          \
    php7.4-memcache       \
    php7.4-memcached      \
@@ -119,7 +118,7 @@ RUN wget https://github.com/emcrisostomo/fswatch/releases/download/1.15.0/fswatc
 
 
 # swoole ext
-RUN wget https://github.com/swoole/swoole-src/archive/v4.4.21.tar.gz -O swoole.tar.gz \
+RUN wget https://github.com/swoole/swoole-src/archive/v4.5.2.tar.gz -O swoole.tar.gz \
    && mkdir -p swoole \
    && tar -xf swoole.tar.gz -C swoole --strip-components=1 \
    && rm -rf swoole.tar.gz \
