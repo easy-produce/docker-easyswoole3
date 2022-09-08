@@ -9,7 +9,6 @@ RUN touch /etc/apt/apt.conf.d/99verify-peer.conf \ && echo >>/etc/apt/apt.conf.d
 # 设置镜像源
 RUN sed -i 's#http://archive.ubuntu.com/#https://mirrors.tuna.tsinghua.edu.cn/ubuntu/#' /etc/apt/sources.list;
 
-
 ## 清理镜像
 RUN apt-get clean
 RUN apt-get autoclean
@@ -17,6 +16,9 @@ RUN apt-get update
 RUN apt-get upgrade -y
 
 RUN apt-get install -y wget
+RUN apt-get install -y vim
+RUN apt-get install inetutils-ping
+RUN apt-get apt-get install  telnet
 
 ## 设置时区
 RUN export DEBIAN_FRONTEND=noninteractive \
@@ -41,8 +43,7 @@ RUN apt-get install -y          \
     automake \
     git \
     net-tools \
-    #telnet-server \
-    #redis \
+    telnet-server \
     #pcre-devel \
     #pcre \
     #pcre-devel \
