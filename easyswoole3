@@ -243,7 +243,7 @@ RUN pecl install protobuf http://pecl.php.net/package/protobuf/3.21.5
 RUN echo 'extension=protobuf.so' > /etc/php/7.4/cli/conf.d/protobuf.ini
 
  # zsh
-RUN apt-get zsh -y
+RUN apt-get zsh install -y
 RUN chsh -s /bin/zsh
 RUN sh -c "$(curl -fsSL https://gitee.com/shmhlsy/oh-my-zsh-install.sh/raw/master/install.sh)"
 #zsh-autosuggestions 命令行命令键入时的历史命令建议
