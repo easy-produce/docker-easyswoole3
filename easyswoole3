@@ -242,6 +242,16 @@ RUN echo 'extension=grpc.so' > /etc/php/7.4/cli/conf.d/grpc.ini
 RUN pecl install protobuf http://pecl.php.net/package/protobuf/3.21.5
 RUN echo 'extension=protobuf.so' > /etc/php/7.4/cli/conf.d/protobuf.ini
 
+ # zsh
+RUN apt-get zsh -y
+RUN chsh -s /bin/zsh
+sh -c "$(curl -fsSL https://gitee.com/shmhlsy/oh-my-zsh-install.sh/raw/master/install.sh)"
+#zsh-autosuggestions 命令行命令键入时的历史命令建议
+git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+#zsh-syntax-highlighting 命令行语法高亮插件
+git clone https://gitee.com/Annihilater/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+
+ENTRYPOINT ["/bin/zsh"]
 
 #指定容器里面的路径
 WORKDIR /mnt/server/php
