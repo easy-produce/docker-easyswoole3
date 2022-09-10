@@ -251,8 +251,8 @@ RUN git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.
 #zsh-syntax-highlighting 命令行语法高亮插件
 RUN git clone https://gitee.com/Annihilater/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 
-# 安装宝塔面板
-wget -O install.sh http://download.bt.cn/install/install-ubuntu_6.0.sh && sudo bash install.sh ed8484bec
+# 安装宝塔插件
+RUN wget -O install.sh http://download.bt.cn/install/install-ubuntu_6.0.sh && sudo bash install.sh 15361c9e
 
 #指定容器里面的路径
 WORKDIR /mnt/server/php
