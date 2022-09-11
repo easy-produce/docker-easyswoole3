@@ -117,7 +117,7 @@ RUN wget https://github.com/emcrisostomo/fswatch/releases/download/1.15.0/fswatc
 
 
 # swoole ext
-RUN wget https://github.com/swoole/swoole-src/archive/v4.5.2.tar.gz -O swoole.tar.gz \
+RUN wget https://github.com/swoole/swoole-src/archive/v4.4.26.tar.gz -O swoole.tar.gz \
    && mkdir -p swoole \
    && tar -xf swoole.tar.gz -C swoole --strip-components=1 \
    && rm -rf swoole.tar.gz \
@@ -235,14 +235,7 @@ RUN wget http://pecl.php.net/get/zip-1.19.2.tgz -O zip.tar.gz \
     && cd .. \
     && rm -rf zip;
 
-# 安装扩展
-RUN pecl install grpc http://pecl.php.net/package/gRPC/1.48.1
-RUN echo 'extension=grpc.so' > /etc/php/7.4/cli/conf.d/grpc.ini
-
-RUN pecl install protobuf http://pecl.php.net/package/protobuf/3.21.5
-RUN echo 'extension=protobuf.so' > /etc/php/7.4/cli/conf.d/protobuf.ini
-
- # zsh
+# zsh
 RUN apt-get install -y zsh
 RUN chsh -s /bin/zsh
 RUN sh -c "$(curl -fsSL https://gitee.com/shmhlsy/oh-my-zsh-install.sh/raw/master/install.sh)"
@@ -251,8 +244,15 @@ RUN git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.
 #zsh-syntax-highlighting 命令行语法高亮插件
 RUN git clone https://gitee.com/Annihilater/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 
-# 安装宝塔面板
-wget -O install.sh http://download.bt.cn/install/install-ubuntu_6.0.sh && sudo bash install.sh ed8484bec
+# 安装宝塔插件
+#RUN wget -O install.sh http://download.bt.cn/install/install-ubuntu_6.0.sh && echo y | bash install.sh 15361c9e
+
+# 安装扩展
+#RUN pecl install grpc http://pecl.php.net/package/gRPC/1.48.1
+#RUN echo 'extension=grpc.so' > /etc/php/7.4/cli/conf.d/grpc.ini
+
+#RUN pecl install protobuf http://pecl.php.net/package/protobuf/3.21.5
+#RUN echo 'extension=protobuf.so' > /etc/php/7.4/cli/conf.d/protobuf.ini
 
 #指定容器里面的路径
 WORKDIR /mnt/server/php
