@@ -16,7 +16,6 @@ services:
       - Z=Asia/Shanghai
     networks:
       - backend
-
   redis:
     container_name: redis-dev
     privileged: true
@@ -37,7 +36,7 @@ services:
       context: ""
       dockerfile: easyswoole3
     privileged: true
-    image: 'easyproduce/easyswoole3:7.3'
+    image: 'easyproduce/easyswoole3:7.4'
     restart: unless-stopped
     volumes:
       - ~/develop/php:/mnt/server/php # 项目目录
@@ -111,6 +110,19 @@ services:
       - "20306:20306"
       - "20401:20401"
       - "20501:20501"
+    ulimits:
+      # 指定最大进程数为 65535
+      nproc: 655350
+      core: 0
+      nofile:
+        soft: 655350
+        hard: 655350
+    #    deploy:
+    #      resources:
+    #         limits:
+    #            memory: 256G
+    #         reservations:
+    #            memory: 256G
     networks:
       - backend
     logging:
