@@ -111,6 +111,13 @@ services:
       - "20306:20306"
       - "20401:20401"
       - "20501:20501"
+    ulimits:
+      # 指定最大进程数为 65535
+      nproc: 655350
+      core: 0
+      nofile:
+        soft: 655350
+        hard: 655350
     networks:
       - backend
     logging:

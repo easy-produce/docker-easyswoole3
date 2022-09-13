@@ -1,112 +1,43 @@
-FROM ubuntu:22.04
+FROM centos:8
 
 #version defined
-#ENV PHP_VERSION php7.4
-
-RUN ulimit -c 0;
-RUN ulimit -n 1024000
-
-# 设置策略
-RUN touch /etc/apt/apt.conf.d/99verify-peer.conf \ && echo >>/etc/apt/apt.conf.d/99verify-peer.conf "Acquire { https::Verify-Peer false }"
+ENV SWOOLE_VERSION 4.4.26
+ENV PHP_VERSION 7.4
+ENV EASYSWOOLE_VERSION 3.x-dev
 
 # 设置镜像源
-RUN sed -i 's#http://archive.ubuntu.com/#https://mirrors.tuna.tsinghua.edu.cn/ubuntu/#' /etc/apt/sources.list;
+RUN cd /etc/yum.repos.d/ && sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* && sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*;
 
-## 清理镜像
-RUN apt-get clean
-RUN apt-get autoclean
-RUN apt-get update
-RUN apt-get upgrade -y
 
-RUN apt-get install -y wget
-RUN apt-get install -y vim
-RUN apt-get install -y inetutils-ping
-RUN apt-get install -y telnet
+RUN yum install -y wget
 
-RUN apt-get install -y memcached libmemcached-dev
-RUN apt-get install -y redis-server
+RUN  wget -O /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-vault-8.5.2111.repo;
 
-# 更改php源
-RUN apt-get install -y software-properties-common
-RUN LC_ALL=C.UTF-8 add-apt-repository -y ppa:ondrej/php
+# 清理镜像
+RUN yum clean all
+RUN yum makecache
+RUN yum -y update
 
-# 调试工具
-RUN apt-get install -y gdb
 
-## 设置时区
-RUN export DEBIAN_FRONTEND=noninteractive \
-    && apt-get install -y tzdata \
-    && ln -fs /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
-    && dpkg-reconfigure --frontend noninteractive tzdata
+# 时间校准工具
+RUN yum -y install epel-release
 
 ## install libs
-RUN apt-get install -y          \
-    curl                        \
-    zip                         \
-    unzip                       \
-    #openssl-devel \
-    libcurl4-openssl-dev       \
-    libssl-dev                 \
-    #gcc-c++ \
-    gcc         \
-    g++ \
-    make \
-    libtool \
-    autoconf \
-    automake \
-    git \
-    net-tools \
-    #telnet-server \
-    #pcre-devel \
-    #pcre \
-    #pcre-devel \
-    #zlib \
-    #zlib-devel\
-    zlib1g-dev               \
-    supervisor                 \
-    psmisc
+RUN yum install -y curl zip unzip openssl-devel gcc-c++ make libtool autoconf automake git svn net-tools telnet-server redis pcre-devel pcre pcre-devel zlib zlib-devel psmisc
+RUN yum install -y memcached libmemcached
+RUN yum install -y redis
+RUN mkdir -p /usr/lib/x86_64-linux-gnu/include/libmemcached \
+&& ln -s /usr/include/libmemcached/memcached.h /usr/lib/x86_64-linux-gnu/include/libmemcached/memcached.h
 
-# zsh
-RUN apt-get install -y zsh
-RUN chsh -s /bin/zsh
-RUN sh -c "$(curl -fsSL https://gitee.com/shmhlsy/oh-my-zsh-install.sh/raw/master/install.sh)"
-#zsh-autosuggestions 命令行命令键入时的历史命令建议
-RUN git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-#zsh-syntax-highlighting 命令行语法高亮插件
-RUN git clone https://gitee.com/Annihilater/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+#install php
+#RUN dnf install https://mirrors.aliyun.com/epel/epel-release-latest-8.noarch.rpm
+RUN dnf -y install http://mirrors.tuna.tsinghua.edu.cn/epel/epel-release-latest-8.noarch.rpm
+RUN dnf -y install dnf-utils
+RUN dnf module install -y php:7.4
+RUN dnf module enable php:7.4
+RUN dnf install -y php php-fpm php-gd php-mbstring php-json php-openssl  php-mysqlnd php-cli php-devel php-common
 
-# 安装宝塔插件
-RUN wget -O install.sh http://download.bt.cn/install/install-ubuntu_6.0.sh && echo y | bash install.sh 15361c9e
-
-## 安装php
-RUN apt-get install -y    \
-   php7.4                \
-   php7.4-curl           \
-   php7.4-fpm            \
-   php7.4-gd             \
-   php7.4-intl           \
-   php7.4-imap           \
-   php7.4-xml            \
-   php7.4-xmlrpc         \
-   php7.4-zip               \
-   php7.4-sqlite3        \
-   php7.4-mbstring       \
-   php7.4-json           \
-   php7.4-mysqlnd        \
-   php7.4-cli            \
-   php7.4-dev            \
-   php7.4-redis          \
-   php7.4-mysqli         \
-   php7.4-oauth          \
-   php7.4-memcache       \
-   php7.4-memcached      \
-   php7.4-mcrypt         \
-   php7.4-lua            \
-   php7.4-json           \
-   php7.4-bcmath         \
-   php7.4-mongodb        \
-   php7.4-imagick        \
-   php7.4-common
+#RUN yum --enablerepo=remi-${PHP_VERSION} install -y php php-fpm php-gd php-mbstring php-json php-openssl php-mcrypt php-mysqlnd php-cli php-devel php-common composer
 
 # composer
 RUN wget -c https://mirrors.aliyun.com/composer/composer.phar \
@@ -129,6 +60,66 @@ RUN wget https://github.com/emcrisostomo/fswatch/releases/download/1.15.0/fswatc
     ) \
     && rm -rf fswatch;
 
+
+# swoole ext
+RUN wget https://github.com/swoole/swoole-src/archive/v4.4.26.tar.gz -O swoole.tar.gz \
+    && mkdir -p swoole \
+    && tar -xf swoole.tar.gz -C swoole --strip-components=1 \
+    && rm -rf swoole.tar.gz \
+    && ( \
+    cd swoole \
+    && phpize \
+    && ./configure --enable-openssl \
+    && make \
+    && make install \
+    ) \
+    && sed -i "2i extension=swoole.so" /etc/php.ini \
+    && rm -rf swoole
+
+# redis ext
+RUN wget http://pecl.php.net/get/redis-5.1.1.tgz -O redis.tar.gz \
+    && mkdir -p redis \
+    && tar zxvf redis.tar.gz -C redis --strip-components=1 \
+    && rm -rf redis.tar.gz \
+    && ( \
+    cd redis \
+    && phpize \
+    && ./configure --enable-redis \
+    && make \
+    && make install \
+    ) \
+    && echo 'extension=redis.so' > /etc/php.d/20-redis.ini \
+    && rm -rf redis
+
+## ImageMagick ext
+#RUN wget https://github.com/ImageMagick/ImageMagick/archive/7.0.10-27.tar.gz -O ImageMagick.tar.gz \
+#    && mkdir -p ImageMagick \
+#    && tar zxvf ImageMagick.tar.gz -C ImageMagick --strip-components=1 \
+#    && rm ImageMagick.tar.gz \
+#    && ( \
+#    cd ImageMagick \
+#    && phpize \
+#    && ./configure --enable-ImageMagick \
+#    && make \
+#    && make install \
+#    ) \
+#    && rm -r ImageMagick
+
+## imagick ext
+#RUN wget http://pecl.php.net/get/imagick-3.4.4.tgz -O imagick.tar.gz \
+#    && mkdir -p imagick \
+#    && tar zxvf imagick.tar.gz -C imagick --strip-components=1 \
+#    && rm imagick.tar.gz \
+#    && ( \
+#    cd imagick \
+#    && phpize \
+#    && ./configure  \
+#    && make \
+#    && make install \
+#    ) \
+#    && echo 'extension=imagick.so' > /etc/php.d/20-imagick.ini \
+#    && rm -r imagick
+
 # inotify
 RUN wget http://pecl.php.net/get/inotify-2.0.0.tgz -O inotify.tar.gz \
     && mkdir -p inotify \
@@ -141,10 +132,7 @@ RUN wget http://pecl.php.net/get/inotify-2.0.0.tgz -O inotify.tar.gz \
     && make \
     && make install \
     ) \
-    && echo 'extension=inotify.so' > /etc/php/7.4/cli/conf.d/20-inotify.ini \
-    && echo 'extension=inotify.so' > /etc/php/7.4/mods-available/20-inotify.ini \
-    && echo 'extension=inotify.so' > /etc/php/7.4/fpm/conf.d/20-inotify.ini \
-    && cd .. \
+    && echo 'extension=inotify.so' > /etc/php.d/20-inotify.ini \
     && rm -r inotify
 
 # xlswriter
@@ -159,11 +147,9 @@ RUN wget http://pecl.php.net/get/xlswriter -O xlswriter.tar.gz \
     && make \
     && make install \
     ) \
-    && echo 'extension=xlswriter.so' > /etc/php/7.4/cli/conf.d/20-xlswriter.ini \
-    && echo 'extension=xlswriter.so' > /etc/php/7.4/mods-available/20-xlswriter.ini \
-    && echo 'extension=xlswriter.so' > /etc/php/7.4/fpm/conf.d/20-xlswriter.ini \
-    && cd .. \
+    && echo 'extension=xlswriter.so' > /etc/php.d/20-xlswriter.ini \
     && rm -rf xlswriter;
+
 
 # blake2
 RUN cd /tmp \
@@ -176,11 +162,9 @@ RUN cd /tmp \
     && make \
     && make install \
     ) \
-    && echo 'extension=blake2.so' > /etc/php/7.4/cli/conf.d/20-blake2.ini \
-    && echo 'extension=blake2.so' > /etc/php/7.4/mods-available/20-blake2.ini \
-    && echo 'extension=blake2.so' > /etc/php/7.4/fpm/conf.d/20-blake2.ini \
-    && cd .. \
+    && echo 'extension=blake2.so' > /etc/php.d/20-blake2.ini \
     && rm -rf blake2;
+
 
 # libzip
 RUN wget http://nih.at/libzip/libzip-1.2.0.tar.gz -O libzip.tar.gz \
@@ -193,7 +177,6 @@ RUN wget http://nih.at/libzip/libzip-1.2.0.tar.gz -O libzip.tar.gz \
     && make \
     && make install \
     ) \
-    && cd .. \
     && rm -rf libzip;
 
 # zip
@@ -209,23 +192,44 @@ RUN wget http://pecl.php.net/get/zip-1.19.2.tgz -O zip.tar.gz \
     && make \
     && make install \
     ) \
-    && echo 'extension=zip.so' > /etc/php/7.4/cli/conf.d/20-zip.ini \
-    && echo 'extension=zip.so' > /etc/php/7.4/mods-available/20-zip.ini \
-    && echo 'extension=zip.so' > /etc/php/7.4/fpm/conf.d/20-zip.ini \
-    && cd .. \
+    && echo 'extension=zip.so' > /etc/php.d/20-zip.ini \
     && rm -rf zip;
 
-# 安装扩展
-RUN pecl install grpc http://pecl.php.net/package/gRPC/1.48.1
-RUN echo 'extension=grpc.so' > /etc/php/7.4/cli/conf.d/grpc.ini
+## imagick ext
 
-RUN pecl install protobuf http://pecl.php.net/package/protobuf/3.21.5
-RUN echo 'extension=protobuf.so' > /etc/php/7.4/cli/conf.d/protobuf.ini
 
-# swoole
-RUN pecl install --configureoptions 'enable-sockets="no" enable-openssl="yes" enable-http2="yes" enable-mysqlnd="no" enable-swoole-json="no" enable-swoole-curl="yes" enable-cares="yes"' swoole http://pecl.php.net/get/swoole-4.4.26.tgz
-RUN echo 'extension=swoole.so' > /etc/php/7.4/cli/conf.d/swoole.ini
+RUN wget https://pecl.php.net/get/mongodb-1.13.0.tgz -O mongodb.tar.gz \
+    && mkdir -p mongodb \
+    && tar zxvf mongodb.tar.gz -C mongodb --strip-components=1 \
+    && rm -rf mongodb.tar.gz \
+    && ( \
+    cd mongodb \
+    && phpize \
+    && ./configure  \
+    && make \
+    && make install \
+    ) \
+    && echo 'extension=mongodb.so' > /etc/php.d/20-mongodb.ini \
+    && rm -rf mongodb;
 
-#指定容器里面的路径
+RUN yum install -y php-pear;
+RUN yum -y install ghostscript;
+RUN yum -y install glibc-headers;
+RUN yum -y install ImageMagick;
+RUN yum -y install ImageMagick-devel;
+RUN yum -y install php-bcmath;
+
+RUN pecl install imagick http://pecl.php.net/get/imagick-3.7.0.tgz
+RUN echo 'extension=grpc.so' > /etc/php.d/20-imagick.ini
+
+#RUN pecl install grpc http://pecl.php.net/package/gRPC/1.48.1
+#RUN echo 'extension=grpc.so' > /etc/php.d/20-grpc.ini
+
+#RUN pecl install protobuf http://pecl.php.net/package/protobuf/3.21.5
+#RUN echo 'extension=protobuf.so' > /etc/php.d/20-protobuf.ini
+
+RUN yum -y install gdb;
+RUN yum -y install zsh;
+
 WORKDIR /mnt/server/php
 CMD ["tail", "-f", "/dev/null"]
