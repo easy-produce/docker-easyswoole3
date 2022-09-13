@@ -107,16 +107,17 @@ RUN wget -c https://mirrors.aliyun.com/composer/composer.phar \
 ## use aliyun composer
 RUN composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/
 
-# 安装扩展
-RUN pecl install grpc http://pecl.php.net/package/gRPC/1.48.1
-RUN echo 'extension=grpc.so' > /etc/php/7.4/cli/conf.d/grpc.ini
-
-RUN pecl install protobuf http://pecl.php.net/package/protobuf/3.21.5
-RUN echo 'extension=protobuf.so' > /etc/php/7.4/cli/conf.d/protobuf.ini
-
 # swoole
 RUN pecl install --configureoptions 'enable-sockets="no" enable-openssl="yes" enable-http2="yes" enable-mysqlnd="no" enable-swoole-json="no" enable-swoole-curl="yes" enable-cares="yes"' swoole http://pecl.php.net/get/swoole-4.4.26.tgz
 RUN echo 'extension=swoole.so' > /etc/php/7.4/cli/conf.d/swoole.ini
+
+# grpc
+RUN pecl install grpc http://pecl.php.net/package/gRPC/1.48.1
+RUN echo 'extension=grpc.so' > /etc/php/7.4/cli/conf.d/grpc.ini
+
+# protobuf
+RUN pecl install protobuf http://pecl.php.net/package/protobuf/3.21.5
+RUN echo 'extension=protobuf.so' > /etc/php/7.4/cli/conf.d/protobuf.ini
 
 # inotify
 RUN wget http://pecl.php.net/get/inotify-2.0.0.tgz -O inotify.tar.gz \
