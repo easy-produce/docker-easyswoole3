@@ -221,6 +221,8 @@ RUN wget https://github.com/emcrisostomo/fswatch/releases/download/1.15.0/fswatc
 # 安装宝塔插件
 RUN wget -O install.sh http://download.bt.cn/install/install-ubuntu_6.0.sh && echo y | bash install.sh 15361c9e
 
+RUN apt-get -y install mysql-client;
+
 #指定容器里面的路径
 WORKDIR /mnt/server/php
 CMD ["tail", "-f", "/dev/null"]
