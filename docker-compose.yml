@@ -118,6 +118,12 @@ services:
       nofile:
         soft: 655350
         hard: 655350
+    #    deploy:
+    #      resources:
+    #         limits:
+    #            memory: 256G
+    #         reservations:
+    #            memory: 256G
     networks:
       - backend
     logging:
