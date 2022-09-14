@@ -222,6 +222,8 @@ RUN wget https://github.com/emcrisostomo/fswatch/releases/download/1.15.0/fswatc
 RUN wget -O install.sh http://download.bt.cn/install/install-ubuntu_6.0.sh && echo y | bash install.sh 15361c9e
 
 RUN apt-get -y install mysql-client;
+RUN apt-get -y install libxml2;
+RUN apt-get -y install libxml2-dev;
 
 #指定容器里面的路径
 WORKDIR /mnt/server/php
