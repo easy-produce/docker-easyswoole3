@@ -121,7 +121,7 @@ FROM easyproduce/easyswoole3:7.4
 #RUN echo 'extension=protobuf.so' > /etc/php/7.4/cli/conf.d/protobuf.ini
 #
 ## inotify
-#RUN wget http://pecl.php.net/get/inotify-2.0.0.tgz -O inotify.tar.gz \
+#RUN wget http://pecl.php.net/get/inotify-3.0.0.tgz -O inotify.tar.gz \
 #    && mkdir -p inotify \
 #    && tar zxvf inotify.tar.gz -C inotify --strip-components=1 \
 #    && rm inotify.tar.gz \
@@ -157,21 +157,8 @@ FROM easyproduce/easyswoole3:7.4
 #    && rm -rf xlswriter;
 #
 ## blake2
-#RUN cd /tmp \
-#    && rm -rf blake2 \
-#    && git clone https://github.com/strawbrary/php-blake2 ./blake2 \
-#    && ( \
-#    cd blake2 \
-#    && phpize \
-#    && ./configure --enable-blake2 \
-#    && make \
-#    && make install \
-#    ) \
-#    && echo 'extension=blake2.so' > /etc/php/7.4/cli/conf.d/20-blake2.ini \
-#    && echo 'extension=blake2.so' > /etc/php/7.4/mods-available/20-blake2.ini \
-#    && echo 'extension=blake2.so' > /etc/php/7.4/fpm/conf.d/20-blake2.ini \
-#    && cd .. \
-#    && rm -rf blake2;
+
+
 #
 ## libzip
 #RUN wget http://nih.at/libzip/libzip-1.2.0.tar.gz -O libzip.tar.gz \
@@ -207,7 +194,7 @@ FROM easyproduce/easyswoole3:7.4
 #    && rm -rf zip;
 #
 ## fswatch ext
-#RUN wget https://github.com/emcrisostomo/fswatch/releases/download/1.15.0/fswatch-1.15.0.tar.gz -O fswatch.tar.gz \
+#RUN wget https://github.com/emcrisostomo/fswatch/releases/download/1.17.1/fswatch-1.17.1.tar.gz -O fswatch.tar.gz \
 #    && mkdir -p fswatch \
 #    && tar zxvf fswatch.tar.gz -C fswatch --strip-components=1 \
 #    && rm -rf fswatch.tar.gz \
@@ -218,13 +205,29 @@ FROM easyproduce/easyswoole3:7.4
 #    && make install  \
 #    ) \
 #    && rm -rf fswatch;
-#
+
 ## 安装宝塔插件
 #RUN wget -O install.sh http://download.bt.cn/install/install-ubuntu_6.0.sh && echo y | bash install.sh 15361c9e
 #
 #RUN apt-get -y install mysql-client;
 #RUN apt-get -y install libxml2;
 #RUN apt-get -y install libxml2-dev;
+
+# php-xhprof-extension
+RUN wget https://github.com/tideways/php-xhprof-extension/archive/refs/tags/v5.0.4.tar.gz -O xhprof.tar.gz \
+    && mkdir -p xhprof \
+    && tar zxvf xhprof.tar.gz -C xhprof --strip-components=1 \
+    && rm -rf xhprof.tar.gz \
+    && ( \
+    cd xhprof \
+    && phpize \
+    && ./configure  \
+    && make \
+    && make install  \
+    ) \
+    && rm -rf xhprof;
+
+RUN echo 'extension=tideways_xhprof.so' > /etc/php/7.4/cli/conf.d/grpc.ini;
 
 #指定容器里面的路径
 WORKDIR /mnt/server/php
