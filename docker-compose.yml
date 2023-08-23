@@ -3,10 +3,10 @@ services:
   mysql:
     container_name: mysql-dev
     privileged: true
-    image: 'mysql/mysql-server:5.7'
+    image: 'mysql/mysql-server:5.6'
     restart: unless-stopped
     volumes:
-      - ~/develop/mysql/5.7/:/var/lib/mysql
+      - ~/develop/mysql/5.6/:/var/lib/mysql
     ports:
       - "3306:3306"
     expose:
@@ -16,6 +16,7 @@ services:
       - Z=Asia/Shanghai
     networks:
       - backend
+#    command: --default-authentication-plugin=mysql_native_password #这行代码解决无法访问的问题
   redis:
     container_name: redis-dev
     privileged: true
@@ -133,6 +134,7 @@ services:
       - 223.5.5.5
     environment:
       - TZ=Asia/Shanghai
+      - privileged=true
 
   mongo:
     container_name: mongo-dev

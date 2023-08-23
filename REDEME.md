@@ -24,3 +24,9 @@ docker exec -it redis-dev bash
 ```
 
 
+
+# Mysql 无法访问 授权
+```sql
+https
+://blog.csdn.net/zouyang920/article/details/108219343
+```
