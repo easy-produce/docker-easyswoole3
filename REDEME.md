@@ -29,4 +29,9 @@ docker exec -it redis-dev bash
 ```sql
 https
 ://blog.csdn.net/zouyang920/article/details/108219343
+
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'asa';
+FLUSH PRIVILEGES;
 ```
+
+

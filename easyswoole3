@@ -1,5 +1,5 @@
 #FROM ubuntu:22.04
-FROM easyproduce/easyswoole3:7.4
+FROM easyproduce/easyswoole3:7.3
 
 ##version defined
 ##ENV PHP_VERSION php7.4
@@ -227,7 +227,7 @@ RUN wget https://github.com/tideways/php-xhprof-extension/archive/refs/tags/v5.0
     ) \
     && rm -rf xhprof;
 
-RUN echo 'extension=tideways_xhprof.so' > /etc/php/7.4/cli/conf.d/grpc.ini;
+RUN echo 'extension=tideways_xhprof.so' > /etc/php/7.3/cli/conf.d/grpc.ini;
 
 #指定容器里面的路径
 WORKDIR /mnt/server/php
