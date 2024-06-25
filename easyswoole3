@@ -1,186 +1,212 @@
-FROM ubuntu:22.04
-#FROM easyproduce/easyswoole3:8.1
+#FROM ubuntu:22.04
+FROM easyproduce/easyswoole3:8.1-arm64
 
+### 设置策略
+#RUN touch /etc/apt/apt.conf.d/99verify-peer.conf \ && echo >>/etc/apt/apt.conf.d/99verify-peer.conf "Acquire { https::Verify-Peer false }"
 #
-## 设置策略
-RUN touch /etc/apt/apt.conf.d/99verify-peer.conf \ && echo >>/etc/apt/apt.conf.d/99verify-peer.conf "Acquire { https::Verify-Peer false }"
-
-## 设置镜像源
-RUN sed -i 's#http://archive.ubuntu.com/#https://mirrors.tuna.tsinghua.edu.cn/ubuntu/#' /etc/apt/sources.list;
-
-### 清理镜像
-RUN apt-get clean
-RUN apt-get autoclean
-RUN apt-get update
-RUN apt-get upgrade -y
-
-### install libs
-RUN apt-get install -y          \
-   curl                        \
-   software-properties-common                        \
-   wget                        \
-   telnet                        \
-   redis-server                        \
-   vim                        \
-   memcached libmemcached-dev                        \
-   inetutils-ping                        \
-   zip                         \
-   gdb                         \
-   unzip                       \
-   #openssl-devel \
-   libcurl4-openssl-dev       \
-   libssl-dev                 \
-   #gcc-c++ \
-   gcc         \
-   g++ \
-   make \
-   libtool \
-   autoconf \
-   automake \
-   git \
-   net-tools \
-   #telnet-server \
-   #pcre-devel \
-   #pcre \
-   #pcre-devel \
-   #zlib \
-   #zlib-devel\
-   zlib1g-dev               \
-   supervisor                 \
-   psmisc
-
-### 设置时区
-RUN export DEBIAN_FRONTEND=noninteractive \
-   && apt-get install -y tzdata \
-   && ln -fs /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
-   && dpkg-reconfigure --frontend noninteractive tzdata
-
-## fswatch ext
-RUN wget https://github.com/emcrisostomo/fswatch/releases/download/1.17.1/fswatch-1.17.1.tar.gz -O fswatch.tar.gz \
-   && mkdir -p fswatch \
-   && tar zxvf fswatch.tar.gz -C fswatch --strip-components=1 \
-   && rm -rf fswatch.tar.gz \
-   && ( \
-   cd fswatch \
-   && ./configure  \
-   && make \
-   && make install  \
-   ) \
-   && rm -rf fswatch;
-
-## libzip
-RUN wget http://nih.at/libzip/libzip-1.2.0.tar.gz -O libzip.tar.gz \
-   && mkdir -p libzip \
-   && tar -zxvf libzip.tar.gz -C libzip --strip-components=1 \
-   && rm -rf libzip.tar.gz \
-   && ( \
-   cd libzip \
-   && ./configure  \
-   && make \
-   && make install \
-   ) \
-   && cd .. \
-   && rm -rf libzip;
-
-## 更改php源
-RUN LC_ALL=C.UTF-8 add-apt-repository -y ppa:ondrej/php
-
-## 安装php
-RUN apt-get install -y    \
-  php8.1                \
-  php8.1-curl           \
-  php8.1-fpm            \
-  php8.1-gd             \
-  php8.1-intl           \
-  php8.1-imap           \
-  php8.1-xml            \
-  php8.1-xmlrpc         \
-  php8.1-zip               \
-  php8.1-sqlite3        \
-  php8.1-mbstring       \
-  php8.1-mysqlnd        \
-  php8.1-cli            \
-  php8.1-dev            \
-  php8.1-redis          \
-  php8.1-mysqli         \
-  php8.1-oauth          \
-  php8.1-memcache       \
-  php8.1-memcached      \
-  php8.1-mcrypt         \
-  php8.1-bcmath         \
-  php8.1-mongodb        \
-  php8.1-imagick        \
-  php8.1-common
-
-## composer
-RUN wget -c https://mirrors.aliyun.com/composer/composer.phar \
-   && chmod 755 composer.phar \
-   && mv composer.phar /usr/bin/composer
-
-RUN pecl channel-update pecl.php.net;
-
-## inotify
-RUN pecl install inotify-3.0.0
-RUN echo 'extension=inotify.so' > /etc/php/8.1/cli/conf.d/inotify.ini;
-
-## xlswriter
-RUN pecl install xlswriter-1.5.5
-RUN echo 'extension=xlswriter.so' > /etc/php/8.1/cli/conf.d/xlswriter.ini;
-
-# php-xhprof-extension
-RUN wget https://github.com/tideways/php-xhprof-extension/archive/refs/tags/v5.0.4.tar.gz -O xhprof.tar.gz \
-    && mkdir -p xhprof \
-    && tar zxvf xhprof.tar.gz -C xhprof --strip-components=1 \
-    && rm -rf xhprof.tar.gz \
-    && ( \
-    cd xhprof \
-    && phpize \
-    && ./configure  \
-    && make \
-    && make install  \
-    ) \
-    && rm -rf xhprof;
-
-RUN echo 'extension=tideways_xhprof.so' > /etc/php/8.1/cli/conf.d/xhprof.ini;
-
-## swoole
-RUN pecl install --configureoptions 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes"' swoole-4.8.13
-RUN echo 'extension=swoole.so' > /etc/php/8.1/cli/conf.d/swoole.ini
-
-# use aliyun composer
-RUN composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/
-
-## zsh
-#RUN apt-get install -y zsh
-#RUN chsh -s /bin/zsh
-#RUN sh -c "$(curl -fsSL https://gitee.com/shmhlsy/oh-my-zsh-install.sh/raw/master/install.sh)"
-##zsh-autosuggestions 命令行命令键入时的历史命令建议
-#RUN git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-##zsh-syntax-highlighting 命令行语法高亮插件
-#RUN git clone https://gitee.com/Annihilater/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-
-## grpc
-#RUN pecl install grpc http://pecl.php.net/package/gRPC/1.48.1
-#RUN echo 'extension=grpc.so' > /etc/php/8.1/cli/conf.d/grpc.ini
-
-## protobuf
-#RUN pecl install protobuf http://pecl.php.net/package/protobuf/3.21.5
-#RUN echo 'extension=protobuf.so' > /etc/php/8.1/cli/conf.d/protobuf.ini
-
-## 安装宝塔插件
-#RUN wget -O install.sh http://download.bt.cn/install/install-ubuntu_6.0.sh && echo y | bash install.sh 15361c9e
+### 设置镜像源
+#RUN sed -i 's#http://archive.ubuntu.com/#https://mirrors.tuna.tsinghua.edu.cn/ubuntu/#' /etc/apt/sources.list;
 #
-#RUN apt-get -y install mysql-client;
-#RUN apt-get -y install libxml2;
-#RUN apt-get -y install libxml2-dev;
-
-## swoole
-RUN pecl uninstall swoole || true
-RUN pecl install --configureoptions 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-sockets="yes"' swoole-4.8.13
-
+#### 清理镜像
+#RUN apt-get clean
+#RUN apt-get autoclean
+#RUN apt-get update
+#RUN apt-get upgrade -y
+#
+#### install libs
+#RUN apt-get install -y          \
+#   curl                        \
+#   software-properties-common                        \
+#   wget                        \
+#   telnet                        \
+#   redis-server                        \
+#   vim                        \
+#   memcached libmemcached-dev                        \
+#   inetutils-ping                        \
+#   zip                         \
+#   gdb                         \
+#   unzip                       \
+#   #openssl-devel \
+#   libcurl4-openssl-dev       \
+#   libssl-dev                 \
+#   #gcc-c++ \
+#   gcc         \
+#   g++ \
+#   make \
+#   libtool \
+#   autoconf \
+#   automake \
+#   git \
+#   net-tools \
+#   #telnet-server \
+#   #pcre-devel \
+#   #pcre \
+#   #pcre-devel \
+#   #zlib \
+#   #zlib-devel\
+#   zlib1g-dev               \
+#   supervisor                 \
+#   psmisc
+#
+#### 设置时区
+#RUN export DEBIAN_FRONTEND=noninteractive \
+#   && apt-get install -y tzdata \
+#   && ln -fs /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+#   && dpkg-reconfigure --frontend noninteractive tzdata
+#
+### fswatch ext
+#RUN wget https://github.com/emcrisostomo/fswatch/releases/download/1.17.1/fswatch-1.17.1.tar.gz -O fswatch.tar.gz \
+#   && mkdir -p fswatch \
+#   && tar zxvf fswatch.tar.gz -C fswatch --strip-components=1 \
+#   && rm -rf fswatch.tar.gz \
+#   && ( \
+#   cd fswatch \
+#   && ./configure  \
+#   && make \
+#   && make install  \
+#   ) \
+#   && rm -rf fswatch;
+#
+### libzip
+#RUN wget http://nih.at/libzip/libzip-1.2.0.tar.gz -O libzip.tar.gz \
+#   && mkdir -p libzip \
+#   && tar -zxvf libzip.tar.gz -C libzip --strip-components=1 \
+#   && rm -rf libzip.tar.gz \
+#   && ( \
+#   cd libzip \
+#   && ./configure  \
+#   && make \
+#   && make install \
+#   ) \
+#   && cd .. \
+#   && rm -rf libzip;
+#
+### 更改php源
+#RUN LC_ALL=C.UTF-8 add-apt-repository -y ppa:ondrej/php
+#
+### 安装php
+#RUN apt-get install -y    \
+#  php8.1                \
+#  php8.1-curl           \
+#  php8.1-fpm            \
+#  php8.1-gd             \
+#  php8.1-intl           \
+#  php8.1-imap           \
+#  php8.1-xml            \
+#  php8.1-xmlrpc         \
+#  php8.1-zip               \
+#  php8.1-sqlite3        \
+#  php8.1-mbstring       \
+#  php8.1-mysqlnd        \
+#  php8.1-cli            \
+#  php8.1-dev            \
+#  php8.1-redis          \
+#  php8.1-mysqli         \
+#  php8.1-oauth          \
+#  php8.1-memcache       \
+#  php8.1-memcached      \
+#  php8.1-mcrypt         \
+#  php8.1-bcmath         \
+#  php8.1-mongodb        \
+#  php8.1-imagick        \
+#  php8.1-common
+#
+### composer
+#RUN wget -c https://mirrors.aliyun.com/composer/composer.phar \
+#   && chmod 755 composer.phar \
+#   && mv composer.phar /usr/bin/composer
+#
+#RUN pecl channel-update pecl.php.net;
+#
+### inotify
+#RUN pecl install inotify-3.0.0
+#RUN echo 'extension=inotify.so' > /etc/php/8.1/cli/conf.d/inotify.ini;
+#
+### xlswriter
+#RUN pecl install xlswriter-1.5.5
+#RUN echo 'extension=xlswriter.so' > /etc/php/8.1/cli/conf.d/xlswriter.ini;
+#
+## php-xhprof-extension
+#RUN wget https://github.com/tideways/php-xhprof-extension/archive/refs/tags/v5.0.4.tar.gz -O xhprof.tar.gz \
+#    && mkdir -p xhprof \
+#    && tar zxvf xhprof.tar.gz -C xhprof --strip-components=1 \
+#    && rm -rf xhprof.tar.gz \
+#    && ( \
+#    cd xhprof \
+#    && phpize \
+#    && ./configure  \
+#    && make \
+#    && make install  \
+#    ) \
+#    && rm -rf xhprof;
+#
+#RUN echo 'extension=tideways_xhprof.so' > /etc/php/8.1/cli/conf.d/xhprof.ini;
+#
+### swoole
+#RUN pecl install --configureoptions 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes"' swoole-4.8.13
 #RUN echo 'extension=swoole.so' > /etc/php/8.1/cli/conf.d/swoole.ini
+#
+## use aliyun composer
+#RUN composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/
+#
+### zsh
+##RUN apt-get install -y zsh
+##RUN chsh -s /bin/zsh
+##RUN sh -c "$(curl -fsSL https://gitee.com/shmhlsy/oh-my-zsh-install.sh/raw/master/install.sh)"
+###zsh-autosuggestions 命令行命令键入时的历史命令建议
+##RUN git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+###zsh-syntax-highlighting 命令行语法高亮插件
+##RUN git clone https://gitee.com/Annihilater/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+#
+### grpc
+##RUN pecl install grpc http://pecl.php.net/package/gRPC/1.48.1
+##RUN echo 'extension=grpc.so' > /etc/php/8.1/cli/conf.d/grpc.ini
+#
+### protobuf
+##RUN pecl install protobuf http://pecl.php.net/package/protobuf/3.21.5
+##RUN echo 'extension=protobuf.so' > /etc/php/8.1/cli/conf.d/protobuf.ini
+#
+### 安装宝塔插件
+##RUN wget -O install.sh http://download.bt.cn/install/install-ubuntu_6.0.sh && echo y | bash install.sh 15361c9e
+##
+##RUN apt-get -y install mysql-client;
+##RUN apt-get -y install libxml2;
+##RUN apt-get -y install libxml2-dev;
+#
+### swoole
+#RUN pecl uninstall swoole || true
+#RUN pecl install --configureoptions 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-sockets="yes"' swoole-4.8.13
+#
+##RUN echo 'extension=swoole.so' > /etc/php/8.1/cli/conf.d/swoole.ini
 
+# 消息队列
+RUN apt-get install librabbitmq-dev -y
+RUN pecl install amqp https://pecl.php.net/package/amqp/2.1.2
+
+# 安装docker
+RUN apt-get install -y sudo
 
 #指定容器里面的路径
+RUN wget -O install.sh https://download.bt.cn/install/install-ubuntu_6.0.sh && \
+        yes | sudo bash install.sh &  \
+        sleep 500 && \
+        rm -f install.sh && \
+        pkill -f install.sh
+
+# 上面安装了BT 就不要动了
+RUN sudo apt install python3
+
+#RUN python3 /www/server/panel/tools.py panel asa123456;
+
+# 修改宝塔内部版本
+RUN echo '8888' > /www/server/panel/data/port.pl && /etc/init.d/bt restart
+# 清楚登录限制
+RUN rm -f /www/server/panel/data/*.login
+# 关闭访问限制
+RUN rm -f /www/server/panel/data/limitip.conf
+# 重启服务
+RUN /etc/init.d/bt stop
+RUN /etc/init.d/bt start
+
 WORKDIR /mnt/server/php
-CMD ["tail", "-f", "/dev/null"]
+CMD ["/etc/init.d/bt", "start"]
