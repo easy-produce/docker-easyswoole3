@@ -39,9 +39,9 @@ services:
     image: 'easyproduce/easyswoole3:8.1'
     restart: unless-stopped
     volumes:
-      - ~/develop/php:/mnt/server/php # 项目目录
-      - ~/develop/logs/php:/mnt/logs/php # 日志目录
-      - ~/develop/temp/php:/mnt/temp/php # temp目录
+      - ~/Documents/develop/php:/mnt/server/php # 项目目录
+      - ~/Documents/develop/logs/php:/mnt/logs/php # 日志目录
+      - ~/Documents/develop/temp/php:/mnt/temp/php # temp目录
     ports:
       - "8888:8888"
       - "5001:5001"

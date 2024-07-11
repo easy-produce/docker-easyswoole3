@@ -205,8 +205,12 @@ RUN rm -f /www/server/panel/data/*.login
 # 关闭访问限制
 RUN rm -f /www/server/panel/data/limitip.conf
 # 重启服务
-RUN /etc/init.d/bt stop
-RUN /etc/init.d/bt start
+#RUN /etc/init.d/bt stop
+#RUN /etc/init.d/bt start
+
+# 增加临时文件
+RUN touch /tmp/panelBoot.pl
 
 WORKDIR /mnt/server/php
-CMD ["/etc/init.d/bt", "start"]
+#CMD ["/etc/init.d/bt", "start"]
+CMD /etc/init.d/bt start && tail -f /tmp/panelBoot.pl
